@@ -8,7 +8,8 @@ data class CalendarEvent(
 )
 
 data class CalendarDate(
-    val day: Int,
-    val month: Int,
-    val year: Int
+    val date: Int,     // day of month, e.g., 13
+    val month: String, // month name, e.g., "march"
+    val year: Int,     // year, e.g., 2025
+    val day: String    // day of week, e.g., "monday"
 )

@@ -12,6 +12,8 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 import javax.inject.Inject
 
 class CalendarRepositoryImpl @Inject constructor(
@@ -142,19 +144,26 @@ class CalendarRepositoryImpl @Inject constructor(
      * Extracts day, month, and year from the full timestamp "yyyy-MM-dd HH:mm:ss".
      */
     override fun getDateComponents(timestamp: String): CalendarDate {
-        // "2024-05-15 17:00:00" -> split by space -> ["2024-05-15", "17:00:00"]
-        val datePart = timestamp.split(" ").firstOrNull() ?: ""
-        val parts = datePart.split("-") // ["2024", "05", "15"]
+        return try {
+            // Parse the timestamp into a LocalDateTime object.
+            val dateTime = LocalDateTime.parse(timestamp, formatter)
 
-        if (parts.size != 3) {
-            // Return default or throw an exception if invalid format
-            return CalendarDate(0, 0, 0)
+            // Extract the day of the month.
+            val dayOfMonth = dateTime.dayOfMonth
+
+            // Get the full month name in lowercase.
+            val monthName = dateTime.month.getDisplayName(TextStyle.FULL, Locale.ENGLISH).lowercase()
+
+            // Extract the year.
+            val year = dateTime.year
+
+            // Get the full name of the day of the week in lowercase.
+            val dayName = dateTime.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH).lowercase()
+
+            CalendarDate(date = dayOfMonth, month = monthName, year = year, day = dayName)
+        } catch (e: Exception) {
+            // In case of parsing error, return a default value.
+            CalendarDate(date = 0, month = "", year = 0, day = "")
         }
-
-        val year = parts[0].toIntOrNull() ?: 0
-        val month = parts[1].toIntOrNull() ?: 0
-        val day = parts[2].toIntOrNull() ?: 0
-
-        return CalendarDate(day, month, year)
     }
 }

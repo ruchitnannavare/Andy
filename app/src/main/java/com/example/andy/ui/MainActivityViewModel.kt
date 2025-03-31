@@ -65,7 +65,7 @@ class MainActivityViewModel  @Inject constructor(
     private val dateToday: String = "2024-05-15"
     private val modelList: List<LLMModel> = listOf(
         LLMModel(name = "gpt-4o", model = "gpt-4o-2024-08-06"),
-        LLMModel(name = "gpt-o1-mini", model = "o1-mini-2024-09-12"),
+        LLMModel(name = "o3-mini", model = "o3-mini-2025-01-31"),
     )
     private val aiSuggestedPlaylist = "Evening Chill"
     private var trackDetailsList = listOf<TrackDetails>()

@@ -300,7 +300,10 @@ fun WidgetLayer(
         // Weather row
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically ) {
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable(onClick = {
+                context.launchApp("com.nothing.weather")
+            })) {
             val temp = weather?.hourly?.temperature_2m?.first()?.roundToInt().toString()
             Text(
                 text = "${temp}°",
@@ -354,11 +357,11 @@ fun WidgetLayer(
                             modifier = Modifier.weight(0.75f))
                         {
                             Text(
-                                text = "Monday",
+                                text = currentDate?.day.toString(),
                                 fontSize = 20.sp,
                                 modifier = Modifier.weight(1f))
                             Text(
-                                text = "March, 2025",
+                                text = "${currentDate?.month}, ${currentDate?.year.toString()}",
                                 fontSize = 12.sp,
                                 modifier = Modifier.weight(1f))
                             Text(
@@ -374,7 +377,7 @@ fun WidgetLayer(
 
                         ) {
                             Text(
-                                text = currentDate?.day.toString(),
+                                text = currentDate?.date.toString(),
                                 fontSize = 24.sp,
                                 modifier = Modifier
                                     .align(Alignment.Center)
@@ -516,7 +519,7 @@ fun WidgetLayer(
                     // Track title
                     Text(
                         text = trackDetails?.track.toString(),
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = Color.Black
                     )
                     // Artist name
