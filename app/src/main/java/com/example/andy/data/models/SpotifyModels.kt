@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 @OptIn(InternalSerializationApi::class)
 @Serializable
 data class SpotifyPlaylists(
-    @SerializedName("Playlists")
     val playlists: MutableList<PlaylistData>
 )
 

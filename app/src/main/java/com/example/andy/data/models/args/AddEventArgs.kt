@@ -1,5 +1,10 @@
 package com.example.andy.data.models.args
 
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.Serializable
+
+@OptIn(InternalSerializationApi::class)
+@Serializable
 data class AddEventArgs(
     val date: String,        // e.g., "2025-03-30"
     val time: String,        // e.g., "14:30"

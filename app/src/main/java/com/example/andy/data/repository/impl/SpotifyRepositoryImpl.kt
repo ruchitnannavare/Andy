@@ -1,6 +1,7 @@
 package com.example.andy.data.repository.impl
 
 import android.content.Context
+import android.widget.Toast
 import com.example.andy.data.repository.SpotifyRepository
 import com.example.andy.data.models.Playlist
 import com.example.andy.data.models.PlaylistData
@@ -69,15 +70,6 @@ class SpotifyRepositoryImpl @Inject constructor(
     override fun getPlayList(playListName: String): Playlist {
         val jsonString = destinationFile.readText()
         val spotifyPlaylists: SpotifyPlaylists = Json.decodeFromString(jsonString)
-//        spotifyPlaylists.playlists.map { playlistData ->
-//            val trackObjects = playlistData.tracks.map { trackString ->
-//                val parts = trackString.split(" - ")
-//                val artist = parts.getOrNull(0)?.trim().orEmpty()
-//                val song = parts.getOrNull(1)?.trim().orEmpty()
-//                Track(artist, song)
-//            }
-//            Playlist(playlistData.name, trackObjects)
-//        }
 
         return spotifyPlaylists.playlists
             .first { it.name.equals(playListName, ignoreCase = true) }
@@ -97,40 +89,42 @@ class SpotifyRepositoryImpl @Inject constructor(
      * If the file doesn't exist yet, it will be created.
      */
     override fun addPlayList(playlistName: String, artist: String, song: String) {
-        // Ensure the file exists by initializing it if needed
-        initializeFileFromRaw()
-
-        val spotifyPlaylists: SpotifyPlaylists = if (destinationFile.exists()) {
+        try {// Ensure the file exists by initializing it if needed
             val jsonString = destinationFile.readText()
-            gson.fromJson(jsonString, SpotifyPlaylists::class.java)
-        } else {
-            SpotifyPlaylists(mutableListOf())
-        }
+            val spotifyPlaylists: SpotifyPlaylists = Json.decodeFromString(jsonString)
 
-        // Find existing playlist by name (case-insensitive)
-        val existingPlaylist = spotifyPlaylists.playlists.find {
-            it.name.equals(playlistName, ignoreCase = true)
-        }
-
-        val newTrackString = "$artist - $song"
-
-        // If playlist exists, add the track if it's not already there
-        if (existingPlaylist != null) {
-            if (!existingPlaylist.tracks.contains(newTrackString)) {
-                existingPlaylist.tracks.add(newTrackString)
+            // Find existing playlist by name (case-insensitive)
+            val existingPlaylist = spotifyPlaylists.playlists.find {
+                it.name.equals(playlistName, ignoreCase = true)
             }
-        } else {
-            // Otherwise, create a new playlist
-            val newPlaylistData = PlaylistData(
-                name = playlistName,
-                tracks = mutableListOf(newTrackString)
-            )
-            spotifyPlaylists.playlists.add(newPlaylistData)
-        }
 
-        // Write updated data back to JSON
-        val updatedJson = gson.toJson(spotifyPlaylists, SpotifyPlaylists::class.java)
-        destinationFile.writeText(updatedJson)
+            val newTrackString = "$artist - $song"
+
+            // If playlist exists, add the track if it's not already there
+            if (existingPlaylist != null) {
+                if (!existingPlaylist.tracks.contains(newTrackString)) {
+                    existingPlaylist.tracks.add(newTrackString)
+                }
+            } else {
+                // Otherwise, create a new playlist
+                val newPlaylistData = PlaylistData(
+                    name = playlistName,
+                    tracks = mutableListOf(newTrackString)
+                )
+                spotifyPlaylists.playlists.add(newPlaylistData)
+            }
+
+            // Write updated data back to JSON
+            val updatedJson = gson.toJson(spotifyPlaylists, SpotifyPlaylists::class.java)
+            destinationFile.writeText(updatedJson)
+            Toast.makeText(
+                context,
+                "Added $song to playlist $playlistName",
+                Toast.LENGTH_SHORT
+            ).show()
+        } catch (e: Exception) {
+            val e = e
+        }
     }
 
     override suspend fun getTrackDetails(track: String, artist: String): TrackDetails? {

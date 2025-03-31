@@ -6,6 +6,6 @@ import com.example.andy.data.models.chats.StructuredChatCompletionRequest
 
 
 interface GenAIRepository {
-    suspend fun chatCompletion(request: ChatCompletionRequest): String
+    suspend fun chatCompletion(model: String, query: String): String
     suspend fun structuredCompletion(request: StructuredChatCompletionRequest): StructuredChatChoice?
 }

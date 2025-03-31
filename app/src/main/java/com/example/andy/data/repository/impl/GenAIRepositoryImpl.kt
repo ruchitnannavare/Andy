@@ -2,6 +2,7 @@ package com.example.andy.data.repository.impl
 
 import com.example.andy.data.models.chats.ChatCompletionRequest
 import com.example.andy.data.models.chats.ChatCompletionResponse
+import com.example.andy.data.models.chats.Message
 import com.example.andy.data.models.chats.StructuredChatChoice
 import com.example.andy.data.models.chats.StructuredChatCompletionRequest
 import com.example.andy.data.models.chats.StructuredChatCompletionResponse
@@ -19,8 +20,22 @@ class GenAIRepositoryImpl @Inject constructor(
     private val apiRepository: ApiRepository
 ) : GenAIRepository {
 
-    override suspend fun chatCompletion(chat: ChatCompletionRequest): String {
+    override suspend fun chatCompletion(model: String, query: String): String {
 
+        val messages = listOf<Message>(
+            Message(
+                role = Constants.ROLE_SYSTEM,
+                content = "You are Andy, the everything helper. you are going to do whatever is asked from you by the user."
+            ),
+            Message(
+                role = Constants.ROLE_USER,
+                content = query
+            ),
+        )
+        var chat = ChatCompletionRequest (
+            model = model,
+            messages = messages,
+        )
         val jsonBody = gson.toJson(chat)
         val headers = mapOf(
             "Content-Type" to "application/json",

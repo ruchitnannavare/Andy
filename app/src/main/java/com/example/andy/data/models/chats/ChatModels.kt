@@ -11,21 +11,30 @@ data class LLMModel(val name: String, val model: String)
 data class Message(
     val role: String,               // "user", "assistant", or "system" (and "function" if needed)
     var content: String? = null,    // message text (null if this message is a function call)
-    val name: String? = null,       // for "function" role, the name of the function
-    val toolChoice: FunctionCall? = null // for assistant messages that invoke a function
+    val tool_calls: List<ToolCall>? = null // for assistant messages that invoke a function
 )
+@OptIn(InternalSerializationApi::class)
+@Serializable
+data class ToolCall(
+    val type: String,
+    val function: FunctionCall,      // JSON string of arguments (the model outputs this as JSON text)
+)
+
+// Model for calling functions
 @OptIn(InternalSerializationApi::class)
 @Serializable
 data class FunctionCall(
     val name: String,
-    val arguments: String           // JSON string of arguments (the model outputs this as JSON text)
+    val arguments: String
 )
+
+// Model for registering functions
 @OptIn(InternalSerializationApi::class)
 @Serializable
 data class Function(
     val name: String,
     val description: String,
-    val parameters: JsonElement     // JSON schema for function parameters (as JsonElement)
+    val parameters: JsonElement
 )
 @OptIn(InternalSerializationApi::class)
 @Serializable
@@ -53,17 +62,15 @@ data class StructuredChatCompletionResponse(
 data class StructuredChatChoice(
     val message: Message,
     val index: Int? = null,
-    val functionCall: FunctionCall,
 )
 @OptIn(InternalSerializationApi::class)
 @Serializable
 data class ChatCompletionRequest(
     val model: String,                   // e.g. "gpt-4-0613"
     val messages: List<Message>,
-    val temperature: Double? = null,
-    val functions: List<ToolSpec>? = null,
-    val functionCall: String? = "auto"    // "auto" or "none" or specific function name (optional)
+    val temperature: Double? = null
 )
+
 @OptIn(InternalSerializationApi::class)
 @Serializable
 data class ChatCompletionResponse(

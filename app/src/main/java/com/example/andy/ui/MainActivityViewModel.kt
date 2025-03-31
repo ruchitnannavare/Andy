@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
@@ -225,27 +226,30 @@ class MainActivityViewModel  @Inject constructor(
                 val responseChoice = genAIRepository.structuredCompletion(request)
                 responseChoice?.let { choice ->
                     val assistantMessage = choice.message
+                    val toolCall = assistantMessage.tool_calls?.first()
 
-                    // 4. Check if the assistant is making a function call.
-                    if (assistantMessage.content != null) {
-                        when (assistantMessage.name) {
+                    if (toolCall != null) {
+                        val function = toolCall.function
+                        when (toolCall.function.name) {
                             "add_spotify_playlist" -> {
-                                val args = gson.fromJson(assistantMessage.toolChoice?.arguments, AddPlaylistArgs::class.java)
+                                val args = Json.decodeFromString<AddPlaylistArgs>(function.arguments)
                                 spotifyRepository.addPlayList(args.playlistName, args.artist, args.song)
+                                assistantMessage.content = "Added ${args.song} by ${args.artist} to ${args.playlistName} playlist"
                             }
                             "add_event" -> {
-                                val args = gson.fromJson(assistantMessage.toolChoice?.arguments,
-                                    AddEventArgs::class.java)
+                                val args = Json.decodeFromString<AddEventArgs>(function.arguments)
                                 calendarRepository.addEvent(args.date, args.time, args.eventName, args.duration)
+                                assistantMessage.content = "Added ${args.eventName} to you calendar at ${args.time} on ${args.date}."
                             }
                             "get_weather" -> {
-                                val args = gson.fromJson(assistantMessage.toolChoice?.arguments,
-                                    GetWeatherArgs::class.java)
+                                val args = Json.decodeFromString<GetWeatherArgs>(function.arguments)
                                 val queriedWeather = weatherRepository.getWeather(args.lat, args.lon)
+                                assistantMessage.content = genAIRepository.chatCompletion(
+                                    model = currentModel.value?.model.toString(),
+                                    query = PromptHelper.getWeatherPrompt(queriedWeather.toString()))
                             }
                             "launch_app" -> {
-                                val args = gson.fromJson(assistantMessage.toolChoice?.arguments,
-                                    LaunchAppArgs::class.java)
+                                val args = Json.decodeFromString<LaunchAppArgs>(function.arguments)
                                 if(args.packageName != "") {
                                     _launchPackage.value = args.packageName
                                 }
