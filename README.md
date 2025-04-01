@@ -12,15 +12,16 @@ Andy's design
 In my view, an everything app is something the user shall have open all the time, and thus its design needs to be very personal and customizable. With Dan being a software engineer with an agenda to build a minimalist UI/UX, this flavor of Andy is for Dan. It has a retro-modern design language with terminal-like fonts and pastel gradients. Andy is a single-activity, no-bloat application that contains two layers, widget layer and chat layer, accessed by combinations of multiple StateFlows. The widget layer is the greeting view for the user that can contain notification widgets (calendar and socials) and recommendation widgets (Spotify playlist recommendation).
 
 Assumptions:
-1) Andy being a very personalized app, I have assumed Dan is gravitated more towards green for Andy's thematic experience. A production quality version of Andy should have different themes for fonts and colors and even logo color personalization as well.
-2) Because the developer is also the intended first user, UI controls shall also be less obvious, giving flexibility for radical UI components that serve multiple purposes.
-3) I have also assumed Dan is someone profoundly intrigued by GenAI and its applications and has a functioning idea of how models work internally and in-depth knowledge about how different models differ from each other with their own upsides and shortcomings and hhence model selector has two pre
-4) The current message template is also set as a preference; Dan has a terminal-like interface, but other users can have a chat bubble experience as well.
-5) The Spotify widget is assumed to be powered by a custom Spotify agent that shows generated playlists based on the user's music taste and is injected through SpotifyRepository.
-6) The Calendar widget is assumed to get schedules from the user's calendar app.
-7) The Weather widget shows weather information for the user's last location from location service which gets the last location from the 
-8) The Twitter widget shows the latest post from X APIs, which is injected through socials service that would contain APIs for other social media platforms.
-9) GenAI capability is assumed as a self-hosted remote LLM service with access to open-source models like Mistral and DeepSeek.
+1) Andy heavily uses internet connectivity and assumption is going to be connected with Internet thorughout runtime.
+2) Andy being a very personalized app, I have assumed Dan is gravitated more towards green for Andy's thematic experience. A production quality version of Andy should have different themes for fonts and colors and even logo color personalization as well.
+3) Because the developer is also the intended first user, UI controls shall also be less obvious, giving flexibility for radical UI components that serve multiple purposes.
+4) I have also assumed Dan is someone profoundly intrigued by GenAI and its applications and has a functioning idea of how models work internally and in-depth knowledge about how different models differ from each other with their own upsides and shortcomings and hhence model selector has two pre
+5) The current message template is also set as a preference; Dan has a terminal-like interface, but other users can have a chat bubble experience as well.
+6) The Spotify widget is assumed to be powered by a custom Spotify agent that shows generated playlists based on the user's music taste and is injected through SpotifyRepository.
+7) The Calendar widget is assumed to get schedules from the user's calendar app.
+8) The Weather widget shows weather information for the user's last location from location service which gets the last location from the 
+9) The Twitter widget shows the latest post from X APIs, which is injected through socials service that would contain APIs for other social media platforms.
+10) GenAI capability is assumed as a self-hosted remote LLM service with access to open-source models like Mistral and DeepSeek.
 These widgets should also be editable according to user preferences in a more refined version.
 
 Guide:
