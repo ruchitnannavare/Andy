@@ -17,7 +17,7 @@ Assumptions:
 3) Because the developer is also the intended first user, UI controls shall also be less obvious, giving flexibility for radical UI components that serve multiple purposes.
 4) I have also assumed Dan is someone profoundly intrigued by GenAI and its applications and has a functioning idea of how models work internally and in-depth knowledge about how different models differ from each other with their own upsides and shortcomings and hhence model selector has two pre
 5) The current message template is also set as a preference; Dan has a terminal-like interface, but other users can have a chat bubble experience as well.
-6) The Spotify widget is assumed to be powered by a custom Spotify agent that shows generated playlists based on the user's music taste and is injected through SpotifyRepository.
+6) The Spotify widget is assumed to be powered by a custom Spotify agent that shows generated playlists based on the user's music taste and is injected through SpotifyRepository and currently its working on assumption that the selected playlist is "Evening chills".
 7) The Calendar widget is assumed to get schedules from the user's calendar app.
 8) The Weather widget shows weather information for the user's last location from location service which gets the last location from the 
 9) The Twitter widget shows the latest post from X APIs, which is injected through socials service that would contain APIs for other social media platforms.
