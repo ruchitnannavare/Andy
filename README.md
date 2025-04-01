@@ -2,16 +2,16 @@
 Overview
 Andy is an Android application developed in Kotlin as part of a technical assessment. This README provides details about the application, including its purpose, design decisions, development process, and features.
 
-What is Andy? 
+# What is Andy? 
 Andy is an everything assistant built with the purpose of decluttering the modern smartphone experience and reimagining it backed by GenAI. Andy supports native function calling to convert simple text requests to actions while also handling general queries as it is backed by capable models, in this case by GPT-4o and O3-mini.
 
-First boot
+# First boot
 Copy the file named CopyApiKeys.kt in the utils folder and refactor its name to ApiKeys.kt. Andy's prototype requires an OpenAI developer token for LLM remote hosting with Spotify developer Client ID and Secret keys for accessing Spotify APIs.
 
-Andy's design
+# Andy's design
 In my view, an everything app is something the user shall have open all the time, and thus its design needs to be very personal and customizable. With Dan being a software engineer with an agenda to build a minimalist UI/UX, this flavor of Andy is for Dan. It has a retro-modern design language with terminal-like fonts and pastel gradients. Andy is a single-activity, no-bloat application that contains two layers, widget layer and chat layer, accessed by combinations of multiple StateFlows. The widget layer is the greeting view for the user that can contain notification widgets (calendar and socials) and recommendation widgets (Spotify playlist recommendation).
 
-Assumptions:
+# Working Assumptions:
 1) Andy heavily uses internet connectivity and assumption is going to be connected with Internet thorughout runtime.
 2) Andy being a very personalized app, I have assumed Dan is gravitated more towards green for Andy's thematic experience. A production quality version of Andy should have different themes for fonts and colors and even logo color personalization as well.
 3) Because the developer is also the intended first user, UI controls shall also be less obvious, giving flexibility for radical UI components that serve multiple purposes.
@@ -24,12 +24,12 @@ Assumptions:
 10) GenAI capability is assumed as a self-hosted remote LLM service with access to open-source models like Mistral and DeepSeek.
 These widgets should also be editable according to user preferences in a more refined version.
 
-Guide:
+# Guide:
 Widget Screen:
-Clicking the weather widget launches intent for the weather app.
-Clicking "+" icon on calendar launches intent to the calendar app.
-Clicking X widget launches intent for the X app
-The Spotify widget has custom-made next, previous, and play icons to browse suggested playlists, and play launches the song on the Spotify music app.
+1) Clicking the weather widget launches intent for the nothing weather app.
+2) Clicking "+" icon on calendar launches intent to the calendar app.
+3) Clicking X widget launches intent for the X app
+4) The Spotify widget has custom-made next, previous, and play icons to browse suggested playlists, and play launches the song on the Spotify music app.
 
 Chat Screen:
 Focusing on Andy entry makes Chat layer visible. Chat layer contains only handful design elemnts to keep design as decluttered as possible.
@@ -45,7 +45,7 @@ Current function calling support:
 3) As Andy to add an event in the caendar and it will add the event after confirming eventname, date time and duration
 4) Ask Andy to launch an intent and it will launch the external intent if the package name is registered in the manifest.
 
-Development: 
+# Development: 
 Andy being my my first Kotlin native android project, these large language models were crucial tools to churn out function chunks of code based on my understanding of the app.
 1) GPT-4.5 with research preview - This model helped me map my existing .NET MAUI C# business logic knowledge to develop Andy in Kotlin. I used Jetpack Compose to build UI/UX and kept logic in a separate view model layer through Hilt dependency injection.
 2) GPT-3.5-mini-high - Once having a good understanding of what libraries to use and how the application should be shaped, this model helped me generate chunks of logic implementing features module by module.
