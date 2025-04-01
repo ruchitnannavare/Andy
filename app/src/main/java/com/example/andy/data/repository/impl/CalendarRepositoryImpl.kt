@@ -1,6 +1,8 @@
 package com.example.andy.data.repository.impl
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import com.example.andy.data.models.CalendarDate
 import com.example.andy.data.models.CalendarEvent
 import com.example.andy.data.models.SpotifyPlaylists
@@ -53,7 +55,7 @@ class CalendarRepositoryImpl @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                //TODO: Add file empty exception
+                Log.e("ANDY", e.message.toString())
             }
         }
     }
@@ -101,9 +103,13 @@ class CalendarRepositoryImpl @Inject constructor(
             file.writeText("date,time,event,duration\n")
         }
 
-        // Append the new event line
         val newLine = "$date,$time,$eventName,$duration\n"
         file.appendText(newLine)
+        Toast.makeText(
+            context,
+            "Added $eventName to your calendar",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     override fun getNextEvent(timestamp: String): CalendarEvent {
@@ -115,7 +121,6 @@ class CalendarRepositoryImpl @Inject constructor(
         val lines = file.readLines()
         if (lines.size <= 1) return CalendarEvent("", "", "nothing", 0.0)
 
-        // Read each line after header, combine date and time, and parse as LocalDateTime
         val upcomingEvents = lines.drop(1).mapNotNull { line ->
             val parts = line.split(",")
             if (parts.size < 4) null else {

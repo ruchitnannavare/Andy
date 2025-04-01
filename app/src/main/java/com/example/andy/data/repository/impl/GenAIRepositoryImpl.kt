@@ -47,27 +47,21 @@ class GenAIRepositoryImpl @Inject constructor(
         return response.choices.firstOrNull()?.message?.content ?: ""
     }
     override suspend fun structuredCompletion(request: StructuredChatCompletionRequest): StructuredChatChoice? {
-        try {
-            val requestJson = Json.encodeToString(request)
+        val requestJson = Json.encodeToString(request)
 
-            // 3. Call OpenAI ChatCompletion endpoint via ApiRepository
-            val responseJson = apiRepository.postJson(
-                url = genAI.gptCompletionApi,
-                jsonBody = requestJson,
-                headers = mapOf("Authorization" to "Bearer ${genAI.gptToken}")
-            )
-            // Decode the JSON response to our response model
-            val responseObj = gson.fromJson(responseJson, StructuredChatCompletionResponse::class.java)
+        // 3. Call OpenAI ChatCompletion endpoint via ApiRepository
+        val responseJson = apiRepository.postJson(
+            url = genAI.gptCompletionApi,
+            jsonBody = requestJson,
+            headers = mapOf("Authorization" to "Bearer ${genAI.gptToken}")
+        )
+        // Decode the JSON response to our response model
+        val responseObj = gson.fromJson(responseJson, StructuredChatCompletionResponse::class.java)
 
-            // 4. If the assistant called a function, parse the arguments into T
-            val choice = responseObj.choices.firstOrNull()
+        // 4. If the assistant called a function, parse the arguments into T
+        val choice = responseObj.choices.firstOrNull()
 
-            // 5. If no function call, just return the response as-is (with result remaining null)
-            return choice
-        } catch (e: Exception) {
-            val o = e
-            TODO("Not yet implemented")
-        }
-
+        // 5. If no function call, just return the response as-is (with result remaining null)
+        return choice
     }
 }

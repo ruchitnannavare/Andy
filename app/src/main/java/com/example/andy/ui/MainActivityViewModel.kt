@@ -225,7 +225,7 @@ class MainActivityViewModel  @Inject constructor(
             viewModelScope.launch {
                 val responseChoice = genAIRepository.structuredCompletion(request)
                 responseChoice?.let { choice ->
-                    val assistantMessage = choice.message
+                    var assistantMessage = choice.message
                     val toolCall = assistantMessage.tool_calls?.first()
 
                     if (toolCall != null) {
@@ -256,10 +256,9 @@ class MainActivityViewModel  @Inject constructor(
                             }
 
                         }
-                    } else {
-                        assistantMessage.content = ""
+                        assistantMessage.tool_calls = null
                     }
-                    // 5. Add the assistant message to the list.
+
                     val newList = _messages.value.toMutableList().apply { add(assistantMessage) }
                     _messages.value = newList
                 }

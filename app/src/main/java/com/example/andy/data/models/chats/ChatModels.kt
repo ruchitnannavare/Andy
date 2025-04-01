@@ -11,7 +11,7 @@ data class LLMModel(val name: String, val model: String)
 data class Message(
     val role: String,               // "user", "assistant", or "system" (and "function" if needed)
     var content: String? = null,    // message text (null if this message is a function call)
-    val tool_calls: List<ToolCall>? = null // for assistant messages that invoke a function
+    var tool_calls: List<ToolCall>? = null // for assistant messages that invoke a function
 )
 @OptIn(InternalSerializationApi::class)
 @Serializable
