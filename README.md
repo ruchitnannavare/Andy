@@ -21,7 +21,8 @@ In my view, an everything app is something the user shall have open all the time
 7) The Calendar widget is assumed to get schedules from the user's calendar app.
 8) The Weather widget shows weather information for the user's last location from location service which gets the last location from the 
 9) The Twitter widget shows the latest post from X APIs, which is injected through socials service that would contain APIs for other social media platforms.
-10) GenAI capability is assumed as a self-hosted remote LLM service with access to open-source models like Mistral and DeepSeek.
+10) GenAI capability is assumed as a self-hosted remote LLM service that would run self hosted models like deepseek or mistral.
+11) Andy fetches weather and upcoming events data assuming Location service provides last location, as in the location.csv last ping has timestamp which does not have any events scheduled after it simply shows nothing as upcoming.
 These widgets should also be editable according to user preferences in a more refined version.
 
 # Guide:
@@ -30,6 +31,7 @@ Widget Screen:
 2) Clicking "+" icon on calendar launches intent to the calendar app.
 3) Clicking X widget launches intent for the X app
 4) The Spotify widget has custom-made next, previous, and play icons to browse suggested playlists, and play launches the song on the Spotify music app.
+
 
 Chat Screen:
 Focusing on Andy entry makes Chat layer visible. Chat layer contains only handful design elemnts to keep design as decluttered as possible.
