@@ -40,10 +40,10 @@ Focusing on Andy entry makes Chat layer visible. Chat layer contains only handfu
 5) Andy contains native function calling support for getting weather of cities, adding an event to calendar, adding a track to a Spotify playlist, or creating a new playlist itself.
 
 Current function calling support:
-a) Ask Andy to add a track with artist name in your playlists
-b) Ask Andy about weather for any city around the globe and it will show precise weather forecast for next hour
-c) As Andy to add an event in the caendar and it will add the event after confirming eventname, date time and duration
-d) Ask Andy to launch an intent and it will launch the external intent if the package name is registered in the manifest.
+1) Ask Andy to add a track with artist name in your playlists
+2) Ask Andy about weather for any city around the globe and it will show precise weather forecast for next hour
+3) As Andy to add an event in the caendar and it will add the event after confirming eventname, date time and duration
+4) Ask Andy to launch an intent and it will launch the external intent if the package name is registered in the manifest.
 
 Development: 
 Andy being my my first Kotlin native android project, these large language models were crucial tools to churn out function chunks of code based on my understanding of the app.
