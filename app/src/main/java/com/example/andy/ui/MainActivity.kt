@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -95,6 +96,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import com.aallam.openai.api.run.RunId
@@ -111,6 +113,7 @@ import com.example.andy.ui.theme.Typography
 import dagger.hilt.android.AndroidEntryPoint
 import generateNoiseImage
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
@@ -124,6 +127,14 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        lifecycleScope.launch {
+            mainActivityViewModel.launchAppFlow.collect { packageName ->
+                if (packageName != "") {
+                    this@MainActivity.launchApp(packageName)
+                }
+            }
+        }
 
         setContent {
             AndyTheme {
@@ -651,12 +662,25 @@ fun ChatLayer(
     userName: String,
     messages: List<Message> = listOf<Message>(Message(role = "user", content = "Hi how are you?"))
 ) {
-    LazyColumn(modifier = Modifier
+
+    val lazyListState = rememberLazyListState()
+
+    // Effect to scroll to bottom when messages change
+    LaunchedEffect(messages) {
+        if (messages.isNotEmpty()) {
+            lazyListState.animateScrollToItem(messages.size - 1)
+        }
+    }
+
+    LazyColumn(
+        state = lazyListState,
+        modifier = Modifier
         .fillMaxWidth()
         ) {
         items(messages) { message ->
             when (message.role) {
                 Constants.ROLE_USER -> UserMessageTemplate(message, userName)
+                Constants.ROLE_THINKING -> AndyThinkingMessageTemplate()
                 Constants.ROLE_ASSISTANT-> AssistantMessageTemplate(message)
                 else -> DefaultMessageTemplate(message)
             }
@@ -724,6 +748,20 @@ fun ChatLayerTopBar(
                         offsetX += delta
                     }
                 ),
+        )
+    }
+}
+
+@Composable
+fun AndyThinkingMessageTemplate() {
+    Column (
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+    ) {
+        Text(
+            text = "@andy is thinking...",
+            color = Color(0xFF729762),
+            fontSize = 16.sp
         )
     }
 }

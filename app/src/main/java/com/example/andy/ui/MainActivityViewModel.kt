@@ -40,8 +40,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -80,6 +82,9 @@ class MainActivityViewModel  @Inject constructor(
     private val _state = MutableStateFlow(defaultState)
     val state = _state.asStateFlow()
 
+    private val _launchAppFlow = MutableSharedFlow<String>()
+    val launchAppFlow = _launchAppFlow.asSharedFlow()
+
     private val _lastLocation = MutableStateFlow<LocationPoint?>(null)
     val lastLocation = _lastLocation.asStateFlow()
 
@@ -109,10 +114,6 @@ class MainActivityViewModel  @Inject constructor(
 
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile = _userProfile.asStateFlow()
-
-    //TODO:To launch an app from the view model it requires context on the main thread, hence this staeFlow will deliver payload to launch from the main thread
-    private val _launchPackage = MutableStateFlow("")
-    val launchPackage = _launchPackage.asStateFlow()
 
     private val _newMessage = MutableStateFlow("")
     val newMessage = _newMessage.asStateFlow()
@@ -179,9 +180,18 @@ class MainActivityViewModel  @Inject constructor(
             val updatedMessages = _messages.value.toMutableList().apply { add(userMessage) }
             _messages.value = updatedMessages
 
+            // Removing user message
             _newMessage.value = ""
 
-            // 2. Create a StructuredChatCompletionRequest placeholder.
+            // Add a thinking message to indicate processing
+            val thinkingMessage = Message(
+                role = Constants.ROLE_THINKING,
+                content = "..."
+            )
+            val messagesWithThinking = _messages.value.toMutableList().apply { add(thinkingMessage) }
+            _messages.value = messagesWithThinking
+
+            // Create structured query request
             val request = StructuredChatCompletionRequest(
                 model = _currentModel.value?.model.toString(),
                 messages = updatedMessages,
@@ -251,15 +261,29 @@ class MainActivityViewModel  @Inject constructor(
                             "launch_app" -> {
                                 val args = Json.decodeFromString<LaunchAppArgs>(function.arguments)
                                 if(args.packageName != "") {
-                                    _launchPackage.value = args.packageName
+                                    _launchAppFlow.emit(args.packageName)
+
+                                    val appNameParts = args.packageName.split(".")
+                                    val appName = if (appNameParts.size >= 3) {
+                                        appNameParts.subList(1, appNameParts.size).joinToString(" ")
+                                    } else {
+                                        appNameParts.lastOrNull() ?: "app"
+                                    }
+
+                                    assistantMessage.content = "Launching $appName."
                                 }
                             }
-
                         }
                         assistantMessage.tool_calls = null
                     }
 
-                    val newList = _messages.value.toMutableList().apply { add(assistantMessage) }
+                    // Remove the thinking message first and latest message
+                    val newList = _messages.value.toMutableList().apply {
+                        removeIf { it.role == Constants.ROLE_THINKING }
+                        add(assistantMessage)
+                    }
+
+                    //val newList = messagesWithoutThinking.toMutableList().apply { add(assistantMessage) }
                     _messages.value = newList
                 }
             }
