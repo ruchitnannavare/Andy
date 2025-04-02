@@ -3,16 +3,18 @@ Overview
 Andy is an Android application developed in Kotlin as part of a technical assessment. This README provides details about the application, including its purpose, design decisions, development process, and features.
 
 # What is Andy? 
-Andy is an everything assistant built with the purpose of decluttering the modern smartphone experience and reimagining it backed by GenAI. Andy supports native function calling to convert simple text requests to actions while also handling general queries as it is backed by capable models, in this case by GPT-4o and O3-mini.
+Andy is an everything assistant built with the purpose of decluttering the modern smartphone experience and reimagining it backed by GenAI. Andy supports native function calling to convert simple text requests to actions while also handling general queries as it is backed by capable models, in this case by GPT-4o for day to day and O3-mini for reasing based queries.
 
 # First boot
 Copy the file named CopyApiKeys.kt in the utils folder and refactor its name to ApiKeys.kt. Andy's prototype requires an OpenAI developer token for LLM remote hosting with Spotify developer Client ID and Secret keys for accessing Spotify APIs.
 
 # Andy's design
 In my view, an everything app is something the user shall have open all the time, and thus its design needs to be very personal and customizable. With Dan being a software engineer with an agenda to build a minimalist UI/UX, this flavor of Andy is for Dan. It has a retro-modern design language with terminal-like fonts and pastel gradients. Andy is a single-activity, no-bloat application that contains two layers, widget layer and chat layer, accessed by combinations of multiple StateFlows. The widget layer is the greeting view for the user that can contain notification widgets (calendar and socials) and recommendation widgets (Spotify playlist recommendation).
+Andy's UI/UX is heavily text based and uses fonts for personalization. 
+Spotify control, send button used including the app logo in the application are custom designed for the project.
 
 # Working Assumptions:
-1) Andy heavily uses internet connectivity and assumption is going to be connected with Internet thorughout runtime.
+1) Andy's prototype heavily uses internet connectivity and currently doesn't support any popup for errors.
 2) Andy being a very personalized app, I have assumed Dan is gravitated more towards green for Andy's thematic experience. A production quality version of Andy should have different themes for fonts and colors and even logo color personalization as well.
 3) Because the developer is also the intended first user, UI controls shall also be less obvious, giving flexibility for radical UI components that serve multiple purposes.
 4) I have also assumed Dan is someone profoundly intrigued by GenAI and its applications and has a functioning idea of how models work internally and in-depth knowledge about how different models differ from each other with their own upsides and shortcomings and hhence model selector has two pre
@@ -55,8 +57,9 @@ Andy being my my first Kotlin native android project, these large language model
 4) Spotify, Calendar, Location, Weather, User profile data, and Social data are all dependency-injected in the view model. Spotify playlists, Calendar, Socials, and user data implementations are set to mimic APIs but read and write data into the copied version of original JSON and CSV files in Application Files directory. Original raw data is in res/raw and is only read once during first bootup.
 5) Weather, Spotify track details, and OpenAI APIs are injected through a custom API client based on the OkHttp3 package.
 6) These injected service functions are accessed at runtime during bootup and function calling from Andy's chat interface.
+7) Apple Keynote - For all the custom designed icon images and logo.
 
-Learning a new UI language was a bit tricky; for this, I sketched out wireframes of UI/UX elements which allowed me to have rapid iteration of different design ideas and understand Jetpack Compose's functional UI language. These are some wireframes from development.
+Learning a new UI language was challenging. To navigate this, I created wireframes of UI/UX elements that enabled rapid iteration of design ideas and helped me understand Jetpack Compose's functional approach. I fed these sketches into LLM models with detailed prompts, which clarified what to expect when generating composables. This approach smoothed my transition from markup-based to functional UI/UX design, making the learning curve more manageable for the at hand task.
 ![IMG_6865](https://github.com/user-attachments/assets/7791d696-c43b-48eb-8bd7-ec459f65ed4b)
 ![IMG_6866](https://github.com/user-attachments/assets/e214b023-b0af-4355-9bcf-354e02f0874b)
 ![IMG_6867](https://github.com/user-attachments/assets/b179d43b-63a9-487b-85fa-134f05e42b70)
@@ -66,4 +69,5 @@ Open issues:
 1) Main scaffold doesn't compress as it should while soft keyboard appears
 2) Keyboard overlaps the new message entyry control
 3) Send button animation doesn't play while waiting for the response.
+4) Protoype lacks popups of any kind as I am yet to dive into the topic and default android popup kills the UI experience.
 
