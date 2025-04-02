@@ -1,6 +1,15 @@
 package com.example.andy.ui
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
+import androidx.annotation.RequiresPermission
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
@@ -35,6 +44,7 @@ import com.example.andy.util.PromptHelper
 import com.example.andy.util.SchemaConfig
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import generateNoiseImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -59,7 +69,9 @@ class MainActivityViewModel  @Inject constructor(
     private val spotifyRepository: SpotifyRepository,
     private val userRepository: UserRepository,
     private val genAIRepository: GenAIRepository,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val connectivityManager: ConnectivityManager,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private var currentTrackIndex = 0
@@ -131,9 +143,15 @@ class MainActivityViewModel  @Inject constructor(
     init {
         // Generate noise once at initialization
         _noiseImage.value = generateNoiseImage(512, 512)
-        fetchCalendarEvents()
-        fetchSocialMedia()
-        fetchLastLocation()
+
+        if (!isConnectedToInternet()) {
+            Toast.makeText(context, "Andy needs internet connection", Toast.LENGTH_LONG).show()
+
+        } else {
+            fetchCalendarEvents()
+            fetchSocialMedia()
+            fetchLastLocation()
+        }
     }
 
     fun updateMessage(message: String) {
@@ -169,6 +187,10 @@ class MainActivityViewModel  @Inject constructor(
     // Method to process sending a query.
     fun sendQuery() {
         try {
+            if (!isConnectedToInternet()) {
+                showToast("No internet connection. Please check your connection and try again.")
+                return
+            }
             _state.value = _state.value.copy(isBusy = true)
             val query = _newMessage.value.trim()
             if (query.isEmpty()) return
@@ -431,5 +453,18 @@ class MainActivityViewModel  @Inject constructor(
 
         // Await all async calls and filter out any null results
         deferredDetails.awaitAll().filterNotNull()
+    }
+
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+    private fun isConnectedToInternet(): Boolean {
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }
